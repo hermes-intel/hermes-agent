@@ -97,6 +97,9 @@ KNOWN_FIGURES = {
     "officiallogank": {"role": "Nous Research Co-Founder",
         "summary": "Co-founding Nous Research and advancing open-source AI agents.",
         "dims": [94, 93, 88, 96, 92, 90, 86, 90]},
+    "nousresearch": {"role": "Hermes AI Lab",
+        "summary": "The lab behind Hermes — shipping world-class open-source AI models and agents.",
+        "dims": [97, 96, 90, 99, 95, 92, 88, 96]},
 
     # ════════════════════════════════════════
     #  AI Researchers & Scientists
@@ -846,7 +849,7 @@ def draw_barcode(d, handle, x, y, max_w, h):
 # ── Main Card Generator ──
 def generate_card(data):
     handle = data["handle"]
-    total = float(data["total_score"])
+    total = int(data["total_score"])
     level = data.get("level") or score_to_level(total)
     role = data.get("role") or score_to_role(total)
     summary = data.get("summary", "")
