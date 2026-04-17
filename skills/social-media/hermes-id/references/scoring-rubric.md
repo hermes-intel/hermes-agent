@@ -135,12 +135,13 @@ Do they actively teach others about AI?
 
 | Level | Score | Description |
 |-------|-------|-------------|
-| Agent God | 96–100 | Pinnacle of AI mastery. Builds, teaches, innovates, and shapes the field. |
-| AI Native | 86–95 | AI is fully integrated into their identity and work. Deep and broad proficiency. |
-| AI Expert | 71–85 | Strong, well-rounded AI skills. Clearly ahead of the curve. |
-| AI Practitioner | 51–70 | Active AI user and learner. Solid foundation, room to grow. |
-| AI Curious | 31–50 | Beginning their AI journey. Interested but limited depth. |
-| AI Newbie | 0–30 | Little to no AI engagement visible in their public content. |
+| Agent God | 95–100 | Pinnacle of AI mastery. Builds, teaches, innovates, and shapes the field. |
+| AI Native | 88–94 | AI is fully integrated into their identity and work. Deep and broad proficiency. |
+| AI Strategist | 78–87 | Strong, well-rounded AI skills. Clearly ahead of the curve. |
+| AI Explorer | 65–77 | Active AI user and learner. Solid foundation, room to grow. |
+| AI Curious | 50–64 | Beginning their AI journey. Interested but limited depth. |
+| AI Aware | 35–49 | Some awareness of AI, limited engagement. |
+| AI Normie | 0–34 | Little to no AI engagement visible in their public content. |
 
 ## Weighted Total Calculation
 

@@ -130,7 +130,7 @@ SCORING_PROMPT = """You are an expert AI analyst performing a deep evaluation of
 - 90-100: World-class  - 75-89: Very strong  - 60-74: Solid
 - 40-59: Moderate  - 20-39: Minimal  - 0-19: No evidence
 
-**LEVELS:** 96-100: Agent God, 86-95: AI Native, 71-85: AI Expert, 51-70: AI Practitioner, 31-50: AI Curious, 0-30: AI Newbie
+**LEVELS:** 95-100: Agent God, 88-94: AI Native, 78-87: AI Strategist, 65-77: AI Explorer, 50-64: AI Curious, 35-49: AI Aware, 0-34: AI Normie
 
 Calculate total_score as weighted average. Assign a creative role title and a one-sentence shareable summary.
 

@@ -2,7 +2,7 @@
 name: hermes-id
 description: "AI Identification Card — scrape any X/Twitter handle's recent tweets, score their AI proficiency across 8 dimensions with LLM analysis, and generate a shareable card image."
 version: 1.0.0
-author: Hermes Intel
+author: Hermes ID
 license: MIT
 platforms: [linux, macos]
 prerequisites:
@@ -114,12 +114,13 @@ You are an expert AI analyst performing a deep evaluation of a Twitter/X user's 
 - 0–19: No evidence found
 
 **LEVEL THRESHOLDS** (based on weighted total):
-- 96–100: Agent God
-- 86–95: AI Native
-- 71–85: AI Expert
-- 51–70: AI Practitioner
-- 31–50: AI Curious
-- 0–30: AI Newbie
+- 95–100: Agent God
+- 88–94: AI Native
+- 78–87: AI Strategist
+- 65–77: AI Explorer
+- 50–64: AI Curious
+- 35–49: AI Aware
+- 0–34: AI Normie
 
 **ROLE:** Assign ONE creative title that best fits their profile. Choose from or create similar to: "Hermes Creator", "Prompt Whisperer", "Agent Architect", "Neural Navigator", "AI Evangelist", "Tool Curator", "Data Alchemist", "Tech Pioneer", "Code Alchemist", "Model Explorer", "AI Strategist", "Digital Craftsman", "Pattern Seeker", "Open-Source Champion", "AI Educator", "Frontier Scout".
 
@@ -213,8 +214,14 @@ Return to the user:
    Powered by Hermes Agent · hermesid.wtf
    ```
 
-3. **Call to action:**
-   > Share your card on X! Tag @Hermes_Intel_ and challenge your friends — just send me any @handle to test theirs.
+3. **One-click share link** — provide a ready-to-tweet URL:
+   ```
+   https://twitter.com/intent/tweet?text=My%20AI%20Score%3A%20{score}%2F100%20%E2%80%94%20{level}%20%F0%9F%A7%A0%0A%0AJust%20got%20my%20AI%20Identification%20Card%20from%20%40Hermes_ID%20%F0%9F%92%A1%0A%0AThink%20you%20can%20beat%20me%3F%20Test%20yours%20%E2%AC%87%EF%B8%8F%0Ahermesid.wtf
+   ```
+   Tell the user: **"Click this link to share on X — just attach your card image and post!"**
+
+4. **Call to action:**
+   > Share your card on X! Tag @Hermes_ID and challenge your friends — just send me any @handle to test theirs.
 
 ## Important Notes
 

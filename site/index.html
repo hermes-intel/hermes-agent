@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes ID — Test Your AI Native Level</title>
+<meta name="description" content="AI Identification Card — Score any X handle's AI proficiency. Powered by Hermes Agent.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Inter:wght@400;600;700;900&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{
+  background:#0a0a1a;color:#e8e8f0;
+  font-family:'Inter',sans-serif;
+}
+
+/* ── full-screen single page ── */
+.page{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* ── ambient bg ── */
+.page::before{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:
+    radial-gradient(ellipse 50% 45% at 41% 50%,rgba(80,50,220,0.28),transparent),
+    radial-gradient(ellipse 35% 40% at 41% 48%,rgba(43,92,230,0.22),transparent),
+    radial-gradient(ellipse 60% 55% at 50% 40%,rgba(80,40,180,0.12),transparent),
+    radial-gradient(ellipse 40% 60% at 30% 70%,rgba(43,92,230,0.08),transparent),
+    radial-gradient(ellipse 50% 40% at 70% 30%,rgba(120,60,220,0.06),transparent);
+  pointer-events:none;
+}
+
+/* ── corner frames (cyber aesthetic) ── */
+.corner{
+  position:absolute;width:60px;height:60px;
+  border-color:rgba(120,80,255,0.25);border-style:solid;
+  pointer-events:none;
+}
+.corner.tl{top:24px;left:24px;border-width:2px 0 0 2px}
+.corner.tr{top:24px;right:24px;border-width:2px 2px 0 0}
+.corner.bl{bottom:24px;left:24px;border-width:0 0 2px 2px}
+.corner.br{bottom:24px;right:24px;border-width:0 2px 2px 0}
+
+/* ── top bar ── */
+.top-bar{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 36px;
+}
+.nav-logo{
+  font-family:'Permanent Marker',cursive;font-size:20px;
+  background:linear-gradient(135deg,#fff,#a0b4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-icon{
+  color:rgba(255,255,255,0.45);text-decoration:none;
+  transition:color 0.2s;display:flex;align-items:center;
+}
+.nav-icon:hover{color:#fff}
+.nav-icon svg{width:20px;height:20px}
+
+/* ── title area ── */
+.title-area{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);
+  text-align:center;z-index:5;pointer-events:none;
+}
+.logo{
+  font-family:'Permanent Marker',cursive;font-size:clamp(28px,5vw,48px);
+  background:linear-gradient(135deg,#fff 0%,#a0b4ff 50%,#7c5cff 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;
+}
+.tagline{
+  font-size:clamp(12px,1.5vw,16px);color:rgba(255,255,255,0.45);
+  margin-top:4px;letter-spacing:0.5px;
+}
+.tagline em{font-style:normal;color:#a0b4ff;font-weight:600}
+
+/* ── card container ── */
+.card-container{
+  position:absolute;z-index:3;
+  left:41%;top:50%;
+  transform:translate(-50%,-50%);
+  height:min(75vh,580px);
+  width:auto;
+}
+.card-layer{
+  position:absolute;top:0;left:0;width:100%;
+  will-change:transform,opacity;
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1),
+             opacity 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.card-layer:first-child{position:relative}
+.card-layer img{
+  height:min(75vh,580px);width:auto;display:block;border-radius:14px;
+  box-shadow:
+    0 0 30px rgba(100,60,255,0.3),
+    0 0 60px rgba(43,92,230,0.25),
+    0 0 120px rgba(120,60,220,0.15),
+    0 0 200px rgba(80,40,180,0.08),
+    0 16px 50px rgba(0,0,0,0.5);
+}
+
+/* glow behind active card — multi-layer aura */
+.card-glow{
+  position:absolute;
+  top:-30%;left:-40%;width:180%;height:160%;
+  pointer-events:none;z-index:-1;
+}
+.card-glow::before,.card-glow::after{
+  content:'';position:absolute;border-radius:50%;
+}
+.card-glow::before{
+  inset:10%;
+  background:radial-gradient(ellipse at center,rgba(100,60,255,0.35) 0%,rgba(43,92,230,0.18) 40%,transparent 70%);
+  filter:blur(50px);
+  animation:glowPulse 4s ease-in-out infinite alternate;
+}
+.card-glow::after{
+  inset:0;
+  background:radial-gradient(ellipse at center,rgba(43,92,230,0.12) 0%,rgba(120,60,220,0.06) 50%,transparent 75%);
+  filter:blur(80px);
+  animation:glowPulse 6s ease-in-out infinite alternate-reverse;
+}
+@keyframes glowPulse{
+  0%{opacity:0.7;transform:scale(0.95)}
+  100%{opacity:1;transform:scale(1.05)}
+}
+
+/* ── bottom area ── */
+.bottom-bar{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  padding:16px 36px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-counter{
+  font-size:13px;color:rgba(255,255,255,0.35);
+  font-weight:600;letter-spacing:3px;
+}
+.brand{
+  font-family:'Caveat',cursive;font-size:22px;
+  color:rgba(43,92,230,0.7);
+}
+.cta-mini{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:30px;
+  background:rgba(43,92,230,0.15);border:1px solid rgba(43,92,230,0.3);
+  color:#a0b4ff;font-size:12px;font-weight:600;
+  text-decoration:none;transition:all 0.3s;
+}
+.cta-mini:hover{background:rgba(43,92,230,0.3);color:#fff}
+.cta-mini svg{width:14px;height:14px}
+
+/* ── scroll dots ── */
+.dots{
+  position:absolute;right:24px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:8px;z-index:10;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  transition:all 0.3s;cursor:pointer;
+}
+.dot.active{
+  background:#a0b4ff;
+  box-shadow:0 0 8px rgba(160,180,255,0.5);
+  transform:scale(1.3);
+}
+
+/* ── popup overlay ── */
+.popup-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(5,5,20,0);
+  backdrop-filter:blur(0px);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  transition:background 0.5s ease, backdrop-filter 0.5s ease;
+}
+.popup-overlay.open{
+  background:rgba(5,5,20,0.88);
+  backdrop-filter:blur(14px);
+  pointer-events:all;
+}
+
+.popup-scene{
+  perspective:1400px;
+  width:min(380px,85vw);
+}
+
+/* the flipper starts tiny + rotated, then animates in */
+.popup-flipper{
+  position:relative;
+  transform-style:preserve-3d;
+  transform:scale(0.3) rotateY(720deg);
+  opacity:0;
+  transition:none;
+}
+/* phase 1: spin in and show front */
+.popup-flipper.spin-in{
+  transform:scale(1) rotateY(0deg);
+  opacity:1;
+  transition:transform 1s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+}
+/* phase 2: auto-flip to back */
+.popup-flipper.show-back{
+  transform:scale(1) rotateY(180deg);
+  opacity:1;
+  transition:transform 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+/* manual flip back to front */
+.popup-flipper.show-front{
+  transform:scale(1) rotateY(0deg);
+  opacity:1;
+  transition:transform 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+.popup-front,.popup-back{
+  backface-visibility:hidden;
+  border-radius:16px;overflow:hidden;
+}
+.popup-front img{
+  width:100%;display:block;border-radius:16px;
+  box-shadow:0 0 80px rgba(43,92,230,0.35),0 20px 60px rgba(0,0,0,0.5);
+}
+.popup-back{
+  position:absolute;inset:0;
+  transform:rotateY(180deg);
+  background:linear-gradient(160deg,#111130 0%,#0d0d24 100%);
+  border:1px solid rgba(120,80,255,0.25);
+  border-radius:16px;
+  box-shadow:0 0 80px rgba(43,92,230,0.35),0 20px 60px rgba(0,0,0,0.5);
+  display:flex;flex-direction:column;
+}
+.popup-back-scroll{
+  flex:1;overflow-y:auto;padding:28px 24px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(120,80,255,0.3) transparent;
+}
+.popup-back-scroll::-webkit-scrollbar{width:4px}
+.popup-back-scroll::-webkit-scrollbar-thumb{background:rgba(120,80,255,0.4);border-radius:4px}
+
+.popup-back .pb-handle{
+  font-family:'Permanent Marker',cursive;font-size:28px;
+  color:#a0b4ff;margin-bottom:4px;
+}
+.popup-back .pb-score{
+  font-size:56px;font-weight:900;
+  background:linear-gradient(135deg,#fff,#7c5cff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1.1;
+}
+.popup-back .pb-level{
+  font-size:16px;color:rgba(255,255,255,0.5);
+  font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:20px;
+}
+.popup-back .pb-role{
+  font-size:14px;color:#a0b4ff;font-weight:600;margin-bottom:20px;
+}
+.popup-back .pb-divider{
+  height:1px;background:rgba(120,80,255,0.2);margin:12px 0;
+}
+.popup-back .pb-dim-title{
+  font-size:13px;color:rgba(255,255,255,0.4);font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;
+}
+.popup-back .pb-dim{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.popup-back .pb-dim-name{
+  font-size:13px;color:rgba(255,255,255,0.7);flex:1;min-width:0;
+}
+.popup-back .pb-dim-bar{
+  width:120px;height:6px;background:rgba(255,255,255,0.08);
+  border-radius:3px;overflow:hidden;flex-shrink:0;
+}
+.popup-back .pb-dim-fill{
+  height:100%;background:linear-gradient(90deg,#2b5ce6,#7c5cff);
+  border-radius:3px;transition:width 0.8s ease 0.3s;
+}
+.popup-back .pb-dim-score{
+  font-size:13px;font-weight:700;color:#fff;width:28px;text-align:right;
+}
+.popup-back .pb-summary{
+  font-size:13px;color:rgba(255,255,255,0.6);
+  font-style:italic;line-height:1.5;margin-top:8px;
+}
+.popup-back .pb-share{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:16px;padding:12px;border-radius:10px;
+  background:rgba(43,92,230,0.2);border:1px solid rgba(43,92,230,0.3);
+  color:#a0b4ff;font-size:13px;font-weight:700;
+  text-decoration:none;transition:all 0.2s;
+}
+.popup-back .pb-share:hover{background:rgba(43,92,230,0.35);color:#fff}
+.popup-back .pb-share svg{width:16px;height:16px}
+
+.popup-close{
+  position:absolute;top:12px;right:16px;z-index:5;
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:rgba(255,255,255,0.1);color:#fff;font-size:18px;
+  cursor:pointer;transition:background 0.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.popup-close:hover{background:rgba(255,255,255,0.2)}
+.popup-flip-hint{
+  text-align:center;margin-top:12px;
+  font-size:11px;color:rgba(255,255,255,0.3);
+  pointer-events:none;
+  transition:opacity 0.3s;
+}
+
+/* ══ GET YOUR CARD MODAL ══ */
+.gm-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(5,5,20,0.92);
+  backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.4s ease;
+}
+.gm-overlay.open{opacity:1;pointer-events:all}
+.gm-box{
+  width:min(420px,90vw);
+  max-height:90vh;overflow-y:auto;
+  background:linear-gradient(160deg,#13133a,#0b0b22);
+  border:1px solid rgba(120,80,255,0.2);
+  border-radius:20px;
+  padding:36px 32px;
+  position:relative;
+  box-shadow:0 0 80px rgba(43,92,230,0.2),0 20px 60px rgba(0,0,0,0.4);
+  scrollbar-width:thin;
+  scrollbar-color:rgba(120,80,255,0.3) transparent;
+}
+.gm-close{
+  position:absolute;top:14px;right:16px;
+  width:32px;height:32px;border-radius:50%;border:none;
+  background:rgba(255,255,255,0.08);color:#fff;font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;
+}
+.gm-close:hover{background:rgba(255,255,255,0.15)}
+.gm-title{
+  font-family:'Permanent Marker',cursive;font-size:24px;
+  background:linear-gradient(135deg,#fff,#a0b4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+.gm-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:24px}
+.gm-input-wrap{
+  display:flex;gap:10px;margin-bottom:8px;
+}
+.gm-input{
+  flex:1;padding:12px 16px;border-radius:12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(120,80,255,0.2);
+  color:#fff;font-size:15px;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color 0.2s;
+}
+.gm-input::placeholder{color:rgba(255,255,255,0.25)}
+.gm-input:focus{border-color:rgba(120,80,255,0.5)}
+.gm-btn{
+  padding:12px 22px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#2b5ce6,#7c5cff);
+  color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+  white-space:nowrap;
+}
+.gm-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(43,92,230,0.4)}
+.gm-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.gm-error{font-size:12px;color:#ff6b6b;margin-top:4px;min-height:18px}
+
+/* loading state */
+.gm-loading{
+  display:none;flex-direction:column;align-items:center;
+  padding:30px 0;gap:16px;
+}
+.gm-loading.active{display:flex}
+.gm-spinner{
+  width:48px;height:48px;border-radius:50%;
+  border:3px solid rgba(120,80,255,0.15);
+  border-top-color:#7c5cff;
+  animation:gmSpin 0.8s linear infinite;
+}
+@keyframes gmSpin{to{transform:rotate(360deg)}}
+.gm-loading-text{
+  font-size:13px;color:rgba(255,255,255,0.5);
+  text-align:center;
+}
+.gm-loading-handle{color:#a0b4ff;font-weight:700}
+.gm-loading-step{
+  font-size:11px;color:rgba(255,255,255,0.3);
+  letter-spacing:1px;text-transform:uppercase;
+  margin-top:-4px;
+  min-height:16px;
+}
+
+/* ══ RESULT: real PNG card ══ */
+.gm-result{display:none;flex-direction:column;align-items:center;gap:14px}
+.gm-result.active{display:flex}
+
+.gm-card-img{
+  width:100%;border-radius:8px;display:block;
+  box-shadow:
+    0 0 30px rgba(100,60,255,0.3),
+    0 0 60px rgba(43,92,230,0.2),
+    0 16px 40px rgba(0,0,0,0.4);
+}
+
+.gm-actions{display:flex;gap:10px;width:100%}
+.gm-share-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#1d9bf0,#1a8cd8);
+  color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+  text-decoration:none;
+}
+.gm-share-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(29,155,240,0.4)}
+.gm-share-btn svg{width:18px;height:18px}
+.gm-dl-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.08);
+  color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;transition:transform 0.2s,background 0.2s;
+  text-decoration:none;
+}
+.gm-dl-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.15)}
+.gm-dl-btn svg{width:18px;height:18px}
+.gm-try-another{
+  font-size:12px;color:rgba(255,255,255,0.3);
+  background:none;border:none;cursor:pointer;
+  transition:color 0.2s;
+}
+.gm-try-another:hover{color:rgba(255,255,255,0.6)}
+</style>
+</head>
+<body>
+
+<canvas id="asciiRain" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
+
+<div class="page">
+
+  <!-- top bar with title -->
+  <div class="top-bar">
+    <div>
+      <div class="logo" style="font-size:clamp(24px,4vw,36px)">HERMES ID</div>
+      <p class="tagline" style="margin-top:2px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase">Test your <em>AI native</em> level and claim your <em>AID</em>.</p>
+    </div>
+    <div class="nav-right">
+      <a href="https://twitter.com/Hermes_ID" target="_blank" class="nav-icon" title="@Hermes_ID on X">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="https://github.com/hermes-intel" target="_blank" class="nav-icon" title="Hermes on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- card stack — all cards in same position -->
+  <div class="card-container" id="cardContainer">
+    <div class="card-glow"></div>
+    <div class="card-layer" data-idx="0"><img src="cards/teknium.png" alt="@teknium"></div>
+    <div class="card-layer" data-idx="1"><img src="cards/karpathy.png" alt="@karpathy"></div>
+    <div class="card-layer" data-idx="2"><img src="cards/sama.png" alt="@sama"></div>
+    <div class="card-layer" data-idx="3"><img src="cards/elonmusk.png" alt="@elonmusk"></div>
+    <div class="card-layer" data-idx="4"><img src="cards/emaboringkass.png" alt="@emaboringkass"></div>
+  </div>
+
+  <!-- scroll dots -->
+  <div class="dots" id="dots"></div>
+
+  <!-- bottom bar -->
+  <div class="bottom-bar">
+    <div class="brand">Hermes Agent</div>
+    <div class="card-counter" id="counter" style="display:none"></div>
+    <button class="cta-mini" id="ctaGetCard" style="cursor:pointer">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Get Your Card
+    </button>
+  </div>
+</div>
+
+<!-- ═══ GET YOUR CARD MODAL ═══ -->
+<div class="gm-overlay" id="gmOverlay">
+  <div class="gm-box">
+    <button class="gm-close" id="gmClose">&#x2715;</button>
+
+    <!-- step 1: input -->
+    <div id="gmStep1">
+      <div class="gm-title">Get Your AI Card</div>
+      <div class="gm-sub">Enter any X handle to generate an AI Identification Card.</div>
+      <div class="gm-input-wrap">
+        <input class="gm-input" id="gmInput" type="text" placeholder="@handle" autocomplete="off" spellcheck="false">
+        <button class="gm-btn" id="gmGo">Scan</button>
+      </div>
+      <div class="gm-error" id="gmError"></div>
+    </div>
+
+    <!-- step 2: loading -->
+    <div class="gm-loading" id="gmStep2">
+      <div class="gm-spinner"></div>
+      <div class="gm-loading-text">Scanning <span class="gm-loading-handle" id="gmLoadHandle"></span></div>
+      <div class="gm-loading-step" id="gmLoadStep"></div>
+    </div>
+
+    <!-- step 3: real PNG card -->
+    <div class="gm-result" id="gmStep3">
+      <img class="gm-card-img" id="gmCardImg" alt="AI ID Card">
+      <div class="gm-actions">
+        <a class="gm-share-btn" id="gmShareBtn" href="#" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share on X
+        </a>
+        <a class="gm-dl-btn" id="gmDlBtn" href="#" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </a>
+      </div>
+      <button class="gm-try-another" id="gmAgain">Try another handle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ POPUP OVERLAY ═══ -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-scene">
+    <button class="popup-close" id="popupClose">&#x2715;</button>
+    <div class="popup-flipper" id="popupFlipper">
+      <div class="popup-front" id="popupFront"></div>
+      <div class="popup-back">
+        <div class="popup-back-scroll" id="popupBackContent"></div>
+      </div>
+    </div>
+    <div class="popup-flip-hint" id="flipHint">click card to flip</div>
+  </div>
+</div>
+
+<script>
+const layers = [...document.querySelectorAll('.card-layer')];
+const counterEl = document.getElementById('counter');
+const dotsEl = document.getElementById('dots');
+const total = layers.length;
+let current = 0;
+let scrollAccum = 0;
+const SCROLL_THRESHOLD = 80;
+
+// Build dots
+layers.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots = [...dotsEl.querySelectorAll('.dot')];
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total || idx === current) return;
+  current = idx;
+  render();
+}
+
+function render() {
+  layers.forEach((layer, i) => {
+    if (i === current) {
+      layer.style.opacity = 1;
+      layer.style.transform = 'scale(1) translateY(0)';
+      layer.style.zIndex = 10;
+    } else if (i < current) {
+      layer.style.opacity = 0;
+      layer.style.transform = 'scale(0.92) translateY(-20px)';
+      layer.style.zIndex = 1;
+    } else {
+      layer.style.opacity = 0;
+      layer.style.transform = 'scale(0.96) translateY(20px)';
+      layer.style.zIndex = 1;
+    }
+  });
+
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  counterEl.textContent = `${current + 1} / ${total}`;
+}
+
+// Scroll/wheel to switch cards
+window.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  scrollAccum += e.deltaY;
+  if (Math.abs(scrollAccum) >= SCROLL_THRESHOLD) {
+    if (scrollAccum > 0 && current < total - 1) {
+      current++;
+      render();
+    } else if (scrollAccum < 0 && current > 0) {
+      current--;
+      render();
+    }
+    scrollAccum = 0;
+  }
+}, { passive: false });
+
+// Touch support
+let touchStartY = 0;
+window.addEventListener('touchstart', (e) => {
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+window.addEventListener('touchend', (e) => {
+  const dy = touchStartY - e.changedTouches[0].clientY;
+  if (Math.abs(dy) > 40) {
+    if (dy > 0 && current < total - 1) { current++; render(); }
+    else if (dy < 0 && current > 0) { current--; render(); }
+  }
+}, { passive: true });
+
+// Arrow keys
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    if (current < total - 1) { current++; render(); }
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    if (current > 0) { current--; render(); }
+  }
+});
+
+render();
+
+// ── Card data for popup backs ──
+const cardData = [
+  { handle:"teknium", score:95, level:"Agent God", role:"Hermes Creator",
+    summary:"The architect of open-source AI models who shapes the future of machine intelligence.",
+    dims:[{n:"AI Usage",s:97},{n:"AI Understanding",s:98},{n:"Communication",s:90},{n:"Product Building",s:99},{n:"Adoption Speed",s:95},{n:"Prompt Engineering",s:88},{n:"Critical Awareness",s:85},{n:"Knowledge Sharing",s:96}]},
+  { handle:"karpathy", score:97, level:"Agent God", role:"Hermes Creator",
+    summary:"The AI educator who makes neural networks click for millions of learners worldwide.",
+    dims:[{n:"AI Usage",s:98},{n:"AI Understanding",s:99},{n:"Communication",s:95},{n:"Product Building",s:96},{n:"Adoption Speed",s:94},{n:"Prompt Engineering",s:92},{n:"Critical Awareness",s:96},{n:"Knowledge Sharing",s:99}]},
+  { handle:"sama", score:88, level:"AI Native", role:"AI Innovator",
+    summary:"Leading the charge to bring artificial general intelligence safely to the world.",
+    dims:[{n:"AI Usage",s:90},{n:"AI Understanding",s:92},{n:"Communication",s:95},{n:"Product Building",s:94},{n:"Adoption Speed",s:88},{n:"Prompt Engineering",s:70},{n:"Critical Awareness",s:82},{n:"Knowledge Sharing",s:78}]},
+  { handle:"elonmusk", score:78, level:"AI Strategist", role:"AI Architect",
+    summary:"Visionary tech leader with strong AI product instincts but limited hands-on prompting.",
+    dims:[{n:"AI Usage",s:75},{n:"AI Understanding",s:80},{n:"Communication",s:88},{n:"Product Building",s:92},{n:"Adoption Speed",s:82},{n:"Prompt Engineering",s:45},{n:"Critical Awareness",s:60},{n:"Knowledge Sharing",s:65}]},
+  { handle:"emaboringkass", score:62, level:"AI Curious", role:"AI Learner",
+    summary:"Casually exploring AI tools and sharing interesting finds with friends.",
+    dims:[{n:"AI Usage",s:70},{n:"AI Understanding",s:45},{n:"Communication",s:72},{n:"Product Building",s:30},{n:"Adoption Speed",s:65},{n:"Prompt Engineering",s:55},{n:"Critical Awareness",s:68},{n:"Knowledge Sharing",s:75}]},
+];
+
+const popup = document.getElementById('popup');
+const popupFlipper = document.getElementById('popupFlipper');
+const popupFront = document.getElementById('popupFront');
+const popupBack = document.getElementById('popupBackContent');
+const popupClose = document.getElementById('popupClose');
+const flipHint = document.getElementById('flipHint');
+let popupOpen = false;
+let autoFlipTimer = null;
+let isShowingBack = false;
+
+function openPopup(idx) {
+  const data = cardData[idx];
+  const imgSrc = layers[idx].querySelector('img').src;
+
+  popupFront.innerHTML = `<img src="${imgSrc}" alt="@${data.handle}">`;
+
+  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    `My AI Score: ${data.score}/100 \u2014 ${data.level} \u{1F9E0}\n\nJust got my AI Identification Card from @Hermes_ID \u{1F4A1}\n\nThink you can beat me? Test yours \u2B07\uFE0F\nhermesid.wtf`
+  )}`;
+
+  let dimsHtml = data.dims.map(d =>
+    `<div class="pb-dim">
+      <span class="pb-dim-name">${d.n}</span>
+      <div class="pb-dim-bar"><div class="pb-dim-fill" style="width:0%"></div></div>
+      <span class="pb-dim-score">${d.s}</span>
+    </div>`
+  ).join('');
+
+  popupBack.innerHTML = `
+    <div class="pb-handle">@${data.handle}</div>
+    <div class="pb-score">${data.score}/100</div>
+    <div class="pb-level">${data.level}</div>
+    <div class="pb-role">${data.role}</div>
+    <div class="pb-divider"></div>
+    <div class="pb-dim-title">AI Proficiencies</div>
+    ${dimsHtml}
+    <div class="pb-divider"></div>
+    <div class="pb-summary">"${data.summary}"</div>
+    <a href="${shareUrl}" target="_blank" class="pb-share">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Share on X
+    </a>`;
+
+  // Reset state
+  popupFlipper.className = 'popup-flipper';
+  isShowingBack = false;
+  flipHint.textContent = '';
+  popup.classList.add('open');
+  popupOpen = true;
+
+  // Phase 1: spin in from center (card spins 720deg and scales up)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      popupFlipper.classList.add('spin-in');
+      flipHint.textContent = '';
+      playFlipSound();
+    });
+  });
+
+  // Phase 2: after landing on front (~1.8s), auto-flip to back
+  clearTimeout(autoFlipTimer);
+  autoFlipTimer = setTimeout(() => {
+    popupFlipper.classList.remove('spin-in');
+    popupFlipper.classList.add('show-back');
+    isShowingBack = true;
+    flipHint.textContent = 'click to flip back \u00B7 scroll for details';
+    playFlipSound();
+
+    // Animate the progress bars after flip completes
+    setTimeout(() => {
+      popupBack.querySelectorAll('.pb-dim-fill').forEach((bar, i) => {
+        bar.style.width = data.dims[i].s + '%';
+      });
+    }, 200);
+  }, 1800);
+}
+
+function closePopup() {
+  clearTimeout(autoFlipTimer);
+  popup.classList.remove('open');
+  popupOpen = false;
+  isShowingBack = false;
+  setTimeout(() => {
+    popupFlipper.className = 'popup-flipper';
+  }, 500);
+}
+
+// Click card to open popup
+layers.forEach((layer, i) => {
+  layer.style.cursor = 'pointer';
+  layer.addEventListener('click', () => openPopup(i));
+});
+
+// Click flipper to manually toggle between front/back
+popupFlipper.addEventListener('click', (e) => {
+  if (e.target.closest('.pb-share')) return;
+  if (!popupFlipper.classList.contains('spin-in')) {
+    playFlipSound();
+    if (isShowingBack) {
+      popupFlipper.classList.remove('show-back');
+      popupFlipper.classList.add('show-front');
+      isShowingBack = false;
+      flipHint.textContent = 'click to see scores';
+    } else {
+      popupFlipper.classList.remove('show-front');
+      popupFlipper.classList.add('show-back');
+      isShowingBack = true;
+      flipHint.textContent = 'click to flip back \u00B7 scroll for details';
+    }
+  }
+});
+
+popupClose.addEventListener('click', (e) => { e.stopPropagation(); closePopup(); });
+popup.addEventListener('click', (e) => { if (e.target === popup) closePopup(); });
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && popupOpen) closePopup(); });
+
+// ── Card flip sound — realistic multi-layer (Web Audio API) ──
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function makeNoise(ctx, dur){
+  const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+  return buf;
+}
+
+function playFlipSound(){
+  if(!audioCtx) audioCtx = new AudioCtx();
+  const ctx = audioCtx, t = ctx.currentTime;
+
+  // Layer 1: Pickup thump — low freq "thp" when card lifts
+  const thump = ctx.createOscillator();
+  thump.type = 'sine';
+  thump.frequency.setValueAtTime(150, t);
+  thump.frequency.exponentialRampToValueAtTime(60, t + 0.06);
+  const thumpG = ctx.createGain();
+  thumpG.gain.setValueAtTime(0.18, t);
+  thumpG.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+  thump.connect(thumpG); thumpG.connect(ctx.destination);
+  thump.start(t); thump.stop(t + 0.07);
+
+  // Layer 2: Paper friction — bandpass-filtered noise, the "shhhk" texture
+  const friction = ctx.createBufferSource();
+  friction.buffer = makeNoise(ctx, 0.22);
+  const friBP = ctx.createBiquadFilter();
+  friBP.type = 'bandpass'; friBP.frequency.value = 4500; friBP.Q.value = 0.6;
+  const friHP = ctx.createBiquadFilter();
+  friHP.type = 'highpass'; friHP.frequency.value = 1200;
+  const friG = ctx.createGain();
+  friG.gain.setValueAtTime(0.001, t);
+  friG.gain.linearRampToValueAtTime(0.2, t + 0.03);
+  friG.gain.setValueAtTime(0.2, t + 0.06);
+  friG.gain.linearRampToValueAtTime(0.08, t + 0.12);
+  friG.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  friction.connect(friBP); friBP.connect(friHP); friHP.connect(friG); friG.connect(ctx.destination);
+  friction.start(t); friction.stop(t + 0.22);
+
+  // Layer 3: Air whoosh — swept bandpass noise during rotation
+  const whoosh = ctx.createBufferSource();
+  whoosh.buffer = makeNoise(ctx, 0.3);
+  const wooBP = ctx.createBiquadFilter();
+  wooBP.type = 'bandpass'; wooBP.Q.value = 2;
+  wooBP.frequency.setValueAtTime(800, t + 0.02);
+  wooBP.frequency.exponentialRampToValueAtTime(2500, t + 0.12);
+  wooBP.frequency.exponentialRampToValueAtTime(600, t + 0.25);
+  const wooG = ctx.createGain();
+  wooG.gain.setValueAtTime(0.001, t);
+  wooG.gain.linearRampToValueAtTime(0.1, t + 0.05);
+  wooG.gain.setValueAtTime(0.1, t + 0.1);
+  wooG.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+  whoosh.connect(wooBP); wooBP.connect(wooG); wooG.connect(ctx.destination);
+  whoosh.start(t); whoosh.stop(t + 0.3);
+
+  // Layer 4: Flutter — rapid amplitude modulation (card edges vibrating)
+  const flutter = ctx.createBufferSource();
+  flutter.buffer = makeNoise(ctx, 0.15);
+  const fluBP = ctx.createBiquadFilter();
+  fluBP.type = 'bandpass'; fluBP.frequency.value = 3200; fluBP.Q.value = 1.5;
+  const fluG = ctx.createGain();
+  const fluLFO = ctx.createOscillator();
+  fluLFO.type = 'square'; fluLFO.frequency.value = 65;
+  const fluLFOG = ctx.createGain();
+  fluLFOG.gain.value = 0.08;
+  fluLFO.connect(fluLFOG); fluLFOG.connect(fluG.gain);
+  fluG.gain.setValueAtTime(0.001, t + 0.04);
+  fluG.gain.linearRampToValueAtTime(0.09, t + 0.07);
+  fluG.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  flutter.connect(fluBP); fluBP.connect(fluG); fluG.connect(ctx.destination);
+  flutter.start(t + 0.04); flutter.stop(t + 0.18);
+  fluLFO.start(t + 0.04); fluLFO.stop(t + 0.18);
+
+  // Layer 5: Landing snap — sharp high-freq transient "tck"
+  const snap = ctx.createBufferSource();
+  snap.buffer = makeNoise(ctx, 0.025);
+  const snapHP = ctx.createBiquadFilter();
+  snapHP.type = 'highpass'; snapHP.frequency.value = 2800;
+  const snapG = ctx.createGain();
+  snapG.gain.setValueAtTime(0.35, t + 0.14);
+  snapG.gain.exponentialRampToValueAtTime(0.001, t + 0.17);
+  snap.connect(snapHP); snapHP.connect(snapG); snapG.connect(ctx.destination);
+  snap.start(t + 0.14); snap.stop(t + 0.17);
+
+  // Layer 6: Landing body — low "tap" on surface
+  const tap = ctx.createOscillator();
+  tap.type = 'sine';
+  tap.frequency.setValueAtTime(200, t + 0.14);
+  tap.frequency.exponentialRampToValueAtTime(80, t + 0.2);
+  const tapG = ctx.createGain();
+  tapG.gain.setValueAtTime(0.12, t + 0.14);
+  tapG.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  tap.connect(tapG); tapG.connect(ctx.destination);
+  tap.start(t + 0.14); tap.stop(t + 0.22);
+}
+
+// Block main page scroll when popup is open
+window.addEventListener('wheel', (e) => {
+  if (popupOpen) e.stopImmediatePropagation();
+}, { passive: false, capture: true });
+
+// ══════════════════════════════════════
+//  GET YOUR CARD MODAL
+// ══════════════════════════════════════
+(function(){
+  const overlay = document.getElementById('gmOverlay');
+  const step1 = document.getElementById('gmStep1');
+  const step2 = document.getElementById('gmStep2');
+  const step3 = document.getElementById('gmStep3');
+  const input = document.getElementById('gmInput');
+  const goBtn = document.getElementById('gmGo');
+  const errEl = document.getElementById('gmError');
+  const loadHandle = document.getElementById('gmLoadHandle');
+  const loadStep = document.getElementById('gmLoadStep');
+
+  function openModal(){
+    step1.style.display='block'; step2.classList.remove('active'); step3.classList.remove('active');
+    input.value=''; errEl.textContent='';
+    overlay.classList.add('open');
+    setTimeout(()=>input.focus(),300);
+  }
+  function closeModal(){ overlay.classList.remove('open'); }
+
+  document.getElementById('ctaGetCard').addEventListener('click', openModal);
+  document.getElementById('gmClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closeModal(); });
+
+  const scanSteps = [
+    'Fetching public tweets...',
+    'Analyzing AI tool usage...',
+    'Evaluating understanding depth...',
+    'Measuring adoption speed...',
+    'Scoring prompt engineering...',
+    'Assessing product building...',
+    'Computing final score...',
+  ];
+
+  async function runScan(handle){
+    step1.style.display='none';
+    step2.classList.add('active');
+    loadHandle.textContent = '@'+handle;
+    loadStep.textContent = scanSteps[0];
+
+    const cardPromise = fetch(`/api/card?handle=${encodeURIComponent(handle)}`);
+
+    for(let i=0;i<scanSteps.length;i++){
+      loadStep.textContent = scanSteps[i];
+      await new Promise(r=>setTimeout(r, 400 + Math.random()*400));
+    }
+
+    try {
+      const resp = await cardPromise;
+      if(!resp.ok) throw new Error('API error');
+      const blob = await resp.blob();
+      const imgUrl = URL.createObjectURL(blob);
+
+      step2.classList.remove('active');
+      document.getElementById('gmCardImg').src = imgUrl;
+
+      const cardPage = `https://hermesid.wtf/card/${handle}`;
+      const shareText = `Just got my AI Identification Card from @Hermes_ID \u{1F9E0}\n\nTest your AI native level \u2B07\uFE0F\n${cardPage}`;
+      document.getElementById('gmShareBtn').href =
+        'https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText);
+
+      const dlBtn = document.getElementById('gmDlBtn');
+      dlBtn.href = `/api/card?handle=${encodeURIComponent(handle)}`;
+      dlBtn.download = `hermes-id-${handle}.png`;
+
+      step3.classList.add('active');
+    } catch(e) {
+      step2.classList.remove('active');
+      step1.style.display='block';
+      errEl.textContent='Failed to generate card. Please try again.';
+    }
+  }
+
+  goBtn.addEventListener('click', ()=>{
+    let h = input.value.trim().replace(/^@/,'');
+    if(!h){ errEl.textContent='Please enter a handle'; return; }
+    if(!/^[a-zA-Z0-9_]{1,30}$/.test(h)){ errEl.textContent='Invalid handle format'; return; }
+    errEl.textContent='';
+    runScan(h);
+  });
+
+  input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') goBtn.click(); });
+
+  document.getElementById('gmAgain').addEventListener('click', ()=>{
+    step3.classList.remove('active');
+    step1.style.display='block';
+    input.value=''; input.focus();
+  });
+})();
+
+// ══════════════════════════════════════
+//  ASCII RAIN — cyberpunk background
+// ══════════════════════════════════════
+(function(){
+  const cvs = document.getElementById('asciiRain');
+  const ctx = cvs.getContext('2d');
+
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*+=<>{}[]|/\\~^:.;!?アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+  const fontSize = 14;
+  let cols, drops;
+
+  function resize(){
+    cvs.width = window.innerWidth;
+    cvs.height = window.innerHeight;
+    cols = Math.floor(cvs.width / fontSize);
+    drops = new Float32Array(cols);
+    for(let i=0;i<cols;i++) drops[i] = Math.random() * -100;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw(){
+    ctx.fillStyle = 'rgba(10,10,26,0.06)';
+    ctx.fillRect(0,0,cvs.width,cvs.height);
+
+    for(let i=0;i<cols;i++){
+      const ch = chars[Math.floor(Math.random()*chars.length)];
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+
+      const fade = Math.min(1, Math.max(0, drops[i] / (cvs.height / fontSize)));
+      const brightness = 0.04 + fade * 0.06;
+
+      const hue = 240 + Math.sin(i * 0.1 + Date.now()*0.0005) * 30;
+      ctx.fillStyle = `hsla(${hue},60%,70%,${brightness})`;
+      ctx.font = fontSize + 'px monospace';
+      ctx.fillText(ch, x, y);
+
+      if(y > cvs.height + Math.random()*200){
+        drops[i] = Math.random() * -30;
+      }
+      drops[i] += 0.3 + Math.random()*0.3;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
