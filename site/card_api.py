@@ -390,14 +390,14 @@ def gen_scores(handle):
     h = handle.lower()
     h = _ALIASES.get(h, h)
 
-    # ── Known figure? Return curated data ──
+    # ── Known figure? Return curated data (use canonical handle) ──
     if h in KNOWN_FIGURES:
         fig = KNOWN_FIGURES[h]
         dims = [{"name": n, "score": s} for n, s in zip(DIM_NAMES, fig["dims"])]
         weights = [0.15, 0.15, 0.12, 0.15, 0.12, 0.10, 0.10, 0.11]
         total = round(sum(s * w for s, w in zip(fig["dims"], weights)))
         return {
-            "handle": handle, "total_score": total,
+            "handle": h, "total_score": total,
             "level": score_to_level(total), "role": fig["role"],
             "summary": fig["summary"], "dimensions": dims,
         }
