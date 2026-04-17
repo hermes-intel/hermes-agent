@@ -25,6 +25,8 @@ CACHE_DIR = Path("/tmp/hermes-cards")
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 AVATAR_CACHE = Path("/tmp/hermes-avatars")
 AVATAR_CACHE.mkdir(parents=True, exist_ok=True)
+BIO_CACHE = Path("/tmp/hermes-bio-cache")
+BIO_CACHE.mkdir(parents=True, exist_ok=True)
 
 # ── Colors ──
 BLUE = (43, 92, 230)
@@ -384,13 +386,226 @@ def score_to_role(s):
     return ROLE_MAP[-1][1]
 
 
+# ── Bio Fetching via fxtwitter (free, no auth) ──
+
+def _fetch_bio(handle):
+    """Fetch X profile data. Returns cached result or fetches from API.
+    Result is saved to disk so the same handle always returns the same data."""
+    h = handle.lower()
+    cache_f = BIO_CACHE / f"{h}.json"
+    if cache_f.exists():
+        try:
+            with open(cache_f) as f:
+                return json.load(f)
+        except Exception:
+            pass
+
+    try:
+        req = urllib.request.Request(
+            f"https://api.fxtwitter.com/{handle}",
+            headers={"User-Agent": "HermesID/1.0"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            if resp.status != 200:
+                return None
+            raw = json.loads(resp.read())
+        u = raw.get("user", {})
+        if not u:
+            return None
+        result = {
+            "bio": u.get("description", ""),
+            "name": u.get("name", ""),
+            "followers": u.get("followers", 0),
+            "following": u.get("following", 0),
+            "tweets": u.get("tweets", 0),
+        }
+        with open(cache_f, "w") as f:
+            json.dump(result, f)
+        return result
+    except Exception:
+        return None
+
+
+# ── Keyword-Based Dimension Scoring Engine ──
+# Each dimension has keywords that boost the score for that dimension.
+# High-signal keywords = +8, medium = +5, low = +3
+
+_DIM_KEYWORDS = {
+    "AI Usage": {
+        "hi": ["chatgpt", "gpt-4", "claude", "gemini", "copilot", "midjourney",
+               "stable diffusion", "dall-e", "llama", "grok", "perplexity",
+               "cursor", "v0", "replit ai", "openai", "anthropic", "huggingface"],
+        "md": ["ai tool", "ai-powered", "automation", "ai workflow", "generative ai",
+               "ai agent", "llm", "model", "fine-tun"],
+        "lo": ["tech", "digital", "software", "data", "cloud", "saas"],
+    },
+    "AI Understanding": {
+        "hi": ["machine learning", "deep learning", "neural net", "transformer",
+               "nlp", "computer vision", "reinforcement learning", "diffusion model",
+               "attention mechanism", "embedding", "tokeniz", "inference",
+               "phd", "researcher", "professor", "scientist", "arxiv", "paper"],
+        "md": ["algorithm", "model", "benchmark", "dataset", "training",
+               "fine-tun", "rag", "vector", "semantic", "latent", "foundation model"],
+        "lo": ["ai", "ml", "data science", "analytics", "statistics"],
+    },
+    "Communication": {
+        "hi": ["podcast", "newsletter", "keynote", "speaker", "author", "writer",
+               "educator", "youtuber", "creator", "media", "journalist",
+               "community", "evangelist", "advocate"],
+        "md": ["blog", "content", "thread", "sharing", "teach", "mentor",
+               "influencer", "host", "moderator", "contributor"],
+        "lo": ["social", "twitter", "connect", "network", "engage"],
+    },
+    "Product Building": {
+        "hi": ["founder", "co-founder", "ceo", "cto", "coo", "built", "building",
+               "shipped", "launched", "startup", "company", "yc", "y combinator",
+               "acquired", "raised", "series", "product", "app"],
+        "md": ["developer", "engineer", "builder", "maker", "hacker",
+               "open source", "contributor", "maintainer", "protocol"],
+        "lo": ["project", "team", "lead", "head", "director", "manager",
+               "vp", "partner", "advisor"],
+    },
+    "Adoption Speed": {
+        "hi": ["early adopter", "day one", "beta tester", "bleeding edge",
+               "frontier", "cutting edge", "first", "pioneer", "alpha"],
+        "md": ["new", "latest", "emerging", "next", "future", "innovation",
+               "disrupt", "experiment", "explore"],
+        "lo": ["tech", "digital", "modern", "forward"],
+    },
+    "Prompt Engineering": {
+        "hi": ["prompt engineer", "prompt", "chain of thought", "few-shot",
+               "system prompt", "jailbreak", "instruction", "fine-tun"],
+        "md": ["ai tool", "workflow", "automat", "template", "custom",
+               "optimize", "pipeline", "agent"],
+        "lo": ["power user", "expert", "advanced", "pro"],
+    },
+    "Critical Awareness": {
+        "hi": ["ai safety", "alignment", "responsible ai", "ethics", "bias",
+               "hallucination", "regulation", "governance", "risk", "trustworthy"],
+        "md": ["privacy", "security", "fairness", "transparent", "accountab",
+               "oversight", "policy", "compliance"],
+        "lo": ["careful", "thoughtful", "critical", "aware", "consider"],
+    },
+    "Knowledge Sharing": {
+        "hi": ["teacher", "professor", "educator", "course", "tutorial",
+               "workshop", "bootcamp", "academy", "mentor", "open source"],
+        "md": ["write", "blog", "share", "guide", "tips", "thread",
+               "publish", "document", "contributor"],
+        "lo": ["help", "community", "support", "learn", "resource"],
+    },
+}
+
+def _score_bio_dims(bio, name, followers, following, tweets):
+    """Score each AI dimension based on real profile data.
+    Returns list of 8 scores and a detected role string.
+
+    Scoring formula per dimension:
+      score = base_from_followers + keyword_hits + activity_bonus
+    Capped at 92 (only curated figures can reach 93+)."""
+    text = f"{bio} {name}".lower()
+
+    # Step 1: Follower-based base score (social proof = credibility)
+    if followers >= 5000000:   f_base = 38
+    elif followers >= 1000000: f_base = 33
+    elif followers >= 500000:  f_base = 29
+    elif followers >= 100000:  f_base = 25
+    elif followers >= 50000:   f_base = 22
+    elif followers >= 10000:   f_base = 18
+    elif followers >= 5000:    f_base = 15
+    elif followers >= 1000:    f_base = 12
+    elif followers >= 100:     f_base = 8
+    else:                      f_base = 5
+
+    # Step 2: Keyword scoring per dimension
+    kw_scores = []
+    for dim_name in DIM_NAMES:
+        kw = _DIM_KEYWORDS[dim_name]
+        pts = 0
+        for word in kw["hi"]:
+            if word in text: pts += 10
+        for word in kw["md"]:
+            if word in text: pts += 6
+        for word in kw["lo"]:
+            if word in text: pts += 3
+        kw_scores.append(min(pts, 50))
+
+    total_kw = sum(kw_scores)
+    # Global AI-relevance multiplier: more keywords = profile is more AI-native
+    if total_kw >= 80:   kw_mult = 1.3
+    elif total_kw >= 50: kw_mult = 1.15
+    elif total_kw >= 25: kw_mult = 1.0
+    elif total_kw >= 10: kw_mult = 0.85
+    else:                kw_mult = 0.7
+
+    # Step 3: Activity bonus from tweet volume
+    if tweets >= 50000:   t_bonus = 8
+    elif tweets >= 10000: t_bonus = 6
+    elif tweets >= 5000:  t_bonus = 5
+    elif tweets >= 1000:  t_bonus = 3
+    elif tweets >= 100:   t_bonus = 2
+    else:                 t_bonus = 0
+
+    # Step 4: Assemble final dimension scores
+    # idx: 0=Usage, 1=Understanding, 2=Communication, 3=ProductBuilding
+    #      4=AdoptionSpeed, 5=PromptEng, 6=CriticalAwareness, 7=KnowledgeSharing
+    dim_scores = []
+    # Dimension-specific follower weight (some dims benefit more from reach)
+    dim_follower_weight = [0.7, 0.5, 1.2, 0.8, 0.6, 0.4, 0.4, 1.0]
+    for i, kw_s in enumerate(kw_scores):
+        base = f_base * dim_follower_weight[i]
+        adjusted_kw = kw_s * kw_mult
+        raw = base + adjusted_kw + t_bonus
+        final = max(12, min(92, round(raw + 15)))  # +15 floor offset
+        dim_scores.append(final)
+
+    # Detect role from bio keywords
+    role = "AI Explorer"
+    bio_l = bio.lower()
+    role_checks = [
+        ("founder", "Founder"), ("co-founder", "Co-Founder"),
+        ("ceo", "CEO"), ("cto", "CTO"), ("coo", "COO"),
+        ("professor", "Professor"), ("researcher", "Researcher"),
+        ("engineer", "Engineer"), ("developer", "Developer"),
+        ("designer", "Designer"), ("investor", "Investor"),
+        ("partner", "VC Partner"), ("analyst", "Analyst"),
+        ("journalist", "Journalist"), ("creator", "Creator"),
+        ("builder", "Builder"), ("writer", "Writer"),
+        ("trader", "Trader"), ("educator", "Educator"),
+        ("advisor", "Advisor"), ("scientist", "Scientist"),
+        ("director", "Director"), ("artist", "Artist"),
+    ]
+    for keyword, title in role_checks:
+        if keyword in bio_l:
+            role = title
+            break
+
+    return dim_scores, role
+
+
+def _make_summary(bio, total, level, name):
+    """Generate a contextual summary based on bio and score."""
+    if not bio.strip():
+        if total >= 80:
+            return "A significant presence in the tech ecosystem."
+        elif total >= 60:
+            return "Actively engaging with technology and digital innovation."
+        else:
+            return "Exploring the digital landscape with growing potential."
+
+    clean = bio.split("\n")[0].strip()
+    if len(clean) > 80:
+        clean = clean[:77] + "..."
+    return clean
+
+
 def gen_scores(handle):
-    """Generate scores for a handle. Known figures get curated data;
-    unknown handles get stable deterministic scores."""
+    """Generate scores for a handle. Priority:
+    1. Curated KNOWN_FIGURES database (84+ major figures)
+    2. Real X bio analysis via fxtwitter API (cached for stability)
+    3. Deterministic fallback for handles with no X data"""
     h = handle.lower()
     h = _ALIASES.get(h, h)
 
-    # ── Known figure? Return curated data (use canonical handle) ──
+    # ── Tier 1: Known figure → curated data ──
     if h in KNOWN_FIGURES:
         fig = KNOWN_FIGURES[h]
         dims = [{"name": n, "score": s} for n, s in zip(DIM_NAMES, fig["dims"])]
@@ -402,42 +617,59 @@ def gen_scores(handle):
             "summary": fig["summary"], "dimensions": dims,
         }
 
-    # ── Unknown handle: stable deterministic scores ──
+    # ── Tier 2: Fetch real X bio and score from it ──
+    profile = _fetch_bio(h)
+    if profile and profile.get("bio") is not None:
+        raw_dims, role = _score_bio_dims(
+            profile["bio"], profile.get("name", ""),
+            profile.get("followers", 0),
+            profile.get("following", 0),
+            profile.get("tweets", 0))
+
+        dims = [{"name": n, "score": s} for n, s in zip(DIM_NAMES, raw_dims)]
+        weights = [0.15, 0.15, 0.12, 0.15, 0.12, 0.10, 0.10, 0.11]
+        total = round(sum(s * w for s, w in zip(raw_dims, weights)))
+        level = score_to_level(total)
+        summary = _make_summary(
+            profile["bio"], total, level, profile.get("name", h))
+        return {
+            "handle": h, "total_score": total,
+            "level": level, "role": role,
+            "summary": summary, "dimensions": dims,
+        }
+
+    # ── Tier 3: No data available → deterministic fallback ──
     seed = _h(h)
     def rng():
         nonlocal seed
         seed = (seed * 16807) % 2147483647
         return (seed & 0x7FFFFFFF) / 2147483647
 
-    base = 35 + int(rng() * 30)  # base range 35-65
+    base = 25 + int(rng() * 25)  # range 25-50
     dims = []
     for n in DIM_NAMES:
-        variance = int(rng() * 25) - 12  # -12 to +12
-        s = max(15, min(88, base + variance))
+        variance = int(rng() * 20) - 10
+        s = max(12, min(65, base + variance))
         dims.append({"name": n, "score": s})
 
     weights = [0.15, 0.15, 0.12, 0.15, 0.12, 0.10, 0.10, 0.11]
     total = round(sum(d["score"] * w for d, w in zip(dims, weights)))
 
     role_pool = [
-        "AI Explorer", "AI Learner", "Digital Thinker", "AI Enthusiast",
-        "Tech Curious", "Prompt Dabbler", "AI Observer", "Data Explorer",
-        "Code Explorer", "AI Student", "Future Builder", "AI Tinkerer",
+        "AI Explorer", "AI Curious", "Digital Thinker",
+        "Tech Enthusiast", "AI Observer",
     ]
     role = role_pool[seed % len(role_pool)]
 
     summary_pool = [
-        "Exploring the AI landscape with growing curiosity and potential.",
-        "Starting to integrate AI tools into daily workflows.",
-        "Curious about AI's possibilities and beginning to experiment.",
-        "Building foundational AI knowledge one step at a time.",
-        "Engaging with AI content and discovering new capabilities.",
-        "On the path to deeper AI understanding and hands-on building.",
+        "Exploring the AI landscape with growing curiosity.",
+        "Beginning to navigate the possibilities of AI tools.",
+        "Curious about AI's potential and open to learning more.",
     ]
     summary = summary_pool[seed % len(summary_pool)]
 
     return {
-        "handle": handle, "total_score": total,
+        "handle": h, "total_score": total,
         "level": score_to_level(total), "role": role,
         "summary": summary, "dimensions": dims,
     }
