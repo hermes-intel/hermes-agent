@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a1a">
 <title>Hermes ID — Test Your AI Native Level</title>
 <meta name="description" content="AI Identification Card — Score any X handle's AI proficiency. Powered by Hermes Agent.">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -466,6 +470,151 @@ body{
   transition:color 0.2s;
 }
 .gm-try-another:hover{color:rgba(255,255,255,0.6)}
+
+/* ══════════════════════════════════════
+   MOBILE — APP-LIKE EXPERIENCE
+   ══════════════════════════════════════ */
+
+@media(max-width:768px){
+  html,body{
+    overscroll-behavior:none;
+    -webkit-overflow-scrolling:touch;
+    touch-action:manipulation;
+  }
+
+  /* ── top bar: compact app header ── */
+  .top-bar{
+    padding:env(safe-area-inset-top,12px) 16px 10px;
+    background:linear-gradient(180deg,rgba(10,10,26,0.95) 0%,rgba(10,10,26,0.6) 70%,transparent);
+  }
+  .top-bar .logo{font-size:20px !important}
+  .top-bar .tagline{font-size:9px !important;letter-spacing:1px !important}
+  .nav-right{gap:16px}
+  .nav-icon svg{width:22px;height:22px}
+
+  /* ── card: centered, responsive ── */
+  .card-container{
+    left:50% !important;top:48% !important;
+    transform:translate(-50%,-50%) !important;
+    height:min(62vh,480px) !important;
+  }
+  .card-layer img{
+    height:min(62vh,480px) !important;
+    border-radius:12px;
+    box-shadow:
+      0 0 20px rgba(100,60,255,0.25),
+      0 0 40px rgba(43,92,230,0.2),
+      0 8px 30px rgba(0,0,0,0.5) !important;
+  }
+  .card-glow{
+    top:-20% !important;left:-30% !important;
+    width:160% !important;height:140% !important;
+  }
+
+  /* ── bottom bar: fixed app-like nav ── */
+  .bottom-bar{
+    padding:12px 16px calc(env(safe-area-inset-bottom,8px) + 10px);
+    background:linear-gradient(0deg,rgba(10,10,26,0.95) 0%,rgba(10,10,26,0.7) 60%,transparent);
+  }
+  .brand{font-size:16px}
+  .cta-mini{
+    padding:12px 20px;font-size:12px;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ── scroll dots: bottom horizontal on mobile ── */
+  .dots{
+    position:absolute;
+    right:auto !important;top:auto !important;bottom:76px;
+    left:50%;transform:translateX(-50%) !important;
+    flex-direction:row !important;gap:10px;
+  }
+  .dot{width:6px;height:6px}
+  .dot.active{transform:scale(1.5)}
+
+  /* ── popup: full screen app view ── */
+  .popup-scene{width:88vw !important}
+  .popup-front img{
+    box-shadow:0 0 40px rgba(43,92,230,0.3),0 10px 30px rgba(0,0,0,0.5) !important;
+  }
+  .popup-back{
+    box-shadow:0 0 40px rgba(43,92,230,0.3),0 10px 30px rgba(0,0,0,0.5) !important;
+  }
+  .popup-back-scroll{padding:20px 18px}
+  .popup-back .pb-handle{font-size:22px}
+  .popup-back .pb-score{font-size:44px}
+  .popup-back .pb-level{font-size:13px;margin-bottom:14px}
+  .popup-back .pb-dim-bar{width:90px}
+  .popup-close{
+    width:40px;height:40px;font-size:20px;
+    top:8px;right:10px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .popup-flip-hint{font-size:12px;margin-top:8px}
+
+  /* ── modal: full-screen on mobile ── */
+  .gm-box{
+    width:100vw !important;
+    max-height:100vh !important;
+    min-height:100vh;
+    border-radius:0 !important;
+    padding:env(safe-area-inset-top,20px) 20px calc(env(safe-area-inset-bottom,20px) + 20px) !important;
+    display:flex;flex-direction:column;justify-content:center;
+    border:none !important;
+  }
+  .gm-close{
+    width:40px;height:40px;font-size:20px;
+    top:env(safe-area-inset-top,12px);right:12px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .gm-title{font-size:22px}
+  .gm-input{padding:14px 16px;font-size:16px;border-radius:14px}
+  .gm-btn{padding:14px 22px;font-size:15px;border-radius:14px;min-height:48px}
+  .gm-card-img{border-radius:10px}
+  .gm-actions{gap:8px}
+  .gm-share-btn,.gm-dl-btn{
+    padding:16px 12px;border-radius:14px;font-size:13px;
+    min-height:50px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .gm-try-another{
+    font-size:14px;padding:12px;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ── ascii rain: lighter on mobile (performance) ── */
+  #asciiRain{opacity:0.6}
+}
+
+/* ── small phones (iPhone SE, etc) ── */
+@media(max-width:375px){
+  .card-container{
+    height:min(55vh,400px) !important;
+  }
+  .card-layer img{
+    height:min(55vh,400px) !important;
+  }
+  .top-bar .logo{font-size:18px !important}
+  .popup-scene{width:92vw !important}
+  .popup-back .pb-score{font-size:36px}
+  .popup-back .pb-dim-bar{width:70px}
+}
+
+/* ── landscape mobile ── */
+@media(max-height:500px) and (orientation:landscape){
+  .card-container{
+    height:min(80vh,320px) !important;
+    top:50% !important;
+  }
+  .card-layer img{
+    height:min(80vh,320px) !important;
+  }
+  .top-bar{padding:6px 16px}
+  .top-bar .tagline{display:none !important}
+  .bottom-bar{padding:6px 16px}
+  .brand{display:none}
+  .dots{bottom:50px}
+}
 </style>
 </head>
 <body>
@@ -630,14 +779,31 @@ window.addEventListener('wheel', (e) => {
   }
 }, { passive: false });
 
-// Touch support
-let touchStartY = 0;
+// Touch support — smooth swipe with velocity detection
+let touchStartY = 0, touchStartX = 0, touchStartT = 0;
+let isSwiping = false;
 window.addEventListener('touchstart', (e) => {
+  if (popupOpen) return;
   touchStartY = e.touches[0].clientY;
+  touchStartX = e.touches[0].clientX;
+  touchStartT = Date.now();
+  isSwiping = false;
 }, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  if (popupOpen) return;
+  const dy = Math.abs(e.touches[0].clientY - touchStartY);
+  const dx = Math.abs(e.touches[0].clientX - touchStartX);
+  if (dy > 10 && dy > dx) { isSwiping = true; e.preventDefault(); }
+}, { passive: false });
+
 window.addEventListener('touchend', (e) => {
+  if (popupOpen) return;
   const dy = touchStartY - e.changedTouches[0].clientY;
-  if (Math.abs(dy) > 40) {
+  const dt = Date.now() - touchStartT;
+  const velocity = Math.abs(dy) / Math.max(dt, 1);
+  const threshold = velocity > 0.3 ? 20 : 40;
+  if (Math.abs(dy) > threshold) {
     if (dy > 0 && current < total - 1) { current++; render(); }
     else if (dy < 0 && current > 0) { current--; render(); }
   }
