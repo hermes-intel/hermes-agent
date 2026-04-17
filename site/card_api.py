@@ -289,9 +289,9 @@ def generate_card(data):
     lx = CARD_X + PAD; rx = RIGHT_END
 
     # top bar
-    d.text((lx, CARD_Y + 14), "loading / hermes id ai scorecard", fill=GRAY, font=F(11))
-    t = "**Hermes ID"
-    d.text((rx - tw(d, t, F(11, "semi")), CARD_Y + 14), t, fill=BLUE, font=F(11, "semi"))
+    d.text((lx, CARD_Y + 12), "loading / hermes id ai scorecard", fill=GRAY, font=F(14))
+    t = "@Hermes_ID"
+    d.text((rx - tw(d, t, F(14, "semi")), CARD_Y + 12), t, fill=BLUE, font=F(14, "semi"))
 
     # avatar frame
     d.rectangle([AVATAR_X, AVATAR_Y, AVATAR_X + AVATAR_W, AVATAR_Y + AVATAR_H], outline=BLUE, width=3)

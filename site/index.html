@@ -149,14 +149,39 @@ body{
   color:rgba(43,92,230,0.7);
 }
 .cta-mini{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 18px;border-radius:30px;
-  background:rgba(43,92,230,0.15);border:1px solid rgba(43,92,230,0.3);
-  color:#a0b4ff;font-size:12px;font-weight:600;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 24px;border-radius:30px;
+  background:rgba(43,92,230,0.2);border:1px solid rgba(43,92,230,0.4);
+  color:#a0b4ff;font-size:13px;font-weight:700;letter-spacing:0.5px;
   text-decoration:none;transition:all 0.3s;
+  position:relative;overflow:hidden;
+  animation:aidPulse 2.4s ease-in-out infinite, aidFloat 3s ease-in-out infinite;
 }
-.cta-mini:hover{background:rgba(43,92,230,0.3);color:#fff}
+.cta-mini::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent,rgba(43,92,230,0.3),transparent,rgba(100,140,255,0.2),transparent);
+  animation:aidSpin 4s linear infinite;
+}
+.cta-mini::after{
+  content:'';position:absolute;inset:1px;border-radius:29px;
+  background:rgba(8,10,20,0.85);z-index:0;
+}
+.cta-mini>*{position:relative;z-index:1}
+.cta-mini:hover{
+  background:rgba(43,92,230,0.35);color:#fff;
+  transform:scale(1.06);
+  box-shadow:0 0 24px rgba(43,92,230,0.5),0 0 60px rgba(43,92,230,0.2);
+}
 .cta-mini svg{width:14px;height:14px}
+@keyframes aidPulse{
+  0%,100%{box-shadow:0 0 8px rgba(43,92,230,0.2),0 0 20px rgba(43,92,230,0.1)}
+  50%{box-shadow:0 0 16px rgba(43,92,230,0.4),0 0 40px rgba(43,92,230,0.15)}
+}
+@keyframes aidFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+@keyframes aidSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
 /* ── scroll dots ── */
 .dots{
@@ -484,7 +509,7 @@ body{
     <div class="card-counter" id="counter" style="display:none"></div>
     <button class="cta-mini" id="ctaGetCard" style="cursor:pointer">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      Get Your Card
+      <span>Get Your AID</span>
     </button>
   </div>
 </div>
