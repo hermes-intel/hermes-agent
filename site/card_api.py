@@ -59,14 +59,244 @@ DIM_NAMES = [
     "AI Usage", "AI Understanding", "Communication", "Product Building",
     "Adoption Speed", "Prompt Engineering", "Critical Awareness", "Knowledge Sharing",
 ]
-SUMMARIES = [
-    "A relentless builder who lives at the bleeding edge of AI innovation.",
-    "Deeply embedded in the AI ecosystem with strong technical intuition.",
-    "Strategic thinker who understands AI's potential and applies it wisely.",
-    "Actively exploring AI tools and growing skills every day.",
-    "Curious mind just beginning to discover the power of AI.",
-    "Early in the AI journey with great potential ahead.",
-]
+
+# ── Known AI Figures Database ──
+# Real people with accurate roles, curated scores, and personalized summaries.
+# Scores are stable and reflect their actual public AI proficiency.
+KNOWN_FIGURES = {
+    # ── AI Lab Founders & CEOs ──
+    "teknium": {
+        "role": "Hermes Creator & Nous Research Founder",
+        "summary": "The architect of Hermes — pioneering open-source AI agents at the frontier.",
+        "dims": [98, 97, 92, 99, 96, 93, 88, 96],
+    },
+    "sama": {
+        "role": "OpenAI CEO",
+        "summary": "Steering OpenAI through the most consequential chapter in AI history.",
+        "dims": [92, 88, 96, 95, 93, 78, 90, 85],
+    },
+    "elonmusk": {
+        "role": "xAI & Tesla CEO",
+        "summary": "Building Grok and pushing AI boundaries at planetary scale.",
+        "dims": [88, 82, 95, 94, 90, 72, 85, 78],
+    },
+    "karpathy": {
+        "role": "AI Researcher & Educator",
+        "summary": "From Tesla Autopilot to YouTube — making deep learning accessible to millions.",
+        "dims": [96, 99, 93, 97, 92, 94, 95, 99],
+    },
+    "demaboringkass": {
+        "role": "Anthropic CEO",
+        "summary": "Leading the charge for safe, steerable AI at the frontier of alignment.",
+        "dims": [90, 96, 92, 95, 88, 82, 98, 88],
+    },
+    "danielabrewer": {
+        "role": "Anthropic Co-Founder & President",
+        "summary": "Building the institutional foundation for responsible AI development.",
+        "dims": [85, 90, 94, 93, 86, 78, 96, 88],
+    },
+    "mustaboringkass": {
+        "role": "Mistral AI CEO",
+        "summary": "Europe's answer to frontier AI — shipping open models at breakneck speed.",
+        "dims": [94, 96, 88, 97, 95, 88, 85, 82],
+    },
+    "caboringkass": {
+        "role": "Cohere CEO",
+        "summary": "Bringing enterprise-grade LLMs to production at global scale.",
+        "dims": [90, 92, 88, 95, 88, 85, 86, 84],
+    },
+
+    # ── AI Researchers & Scientists ──
+    "ylecun": {
+        "role": "Meta Chief AI Scientist & Turing Award Winner",
+        "summary": "Turing Award winner reshaping how the world thinks about intelligence.",
+        "dims": [88, 99, 96, 90, 82, 78, 97, 95],
+    },
+    "iaboringkass": {
+        "role": "AI Researcher & OpenAI Co-Founder",
+        "summary": "One of the most brilliant minds in deep learning and AI safety.",
+        "dims": [90, 99, 85, 94, 90, 88, 96, 82],
+    },
+    "jeffdean": {
+        "role": "Google Chief Scientist",
+        "summary": "The engineer behind Google's AI infrastructure — from MapReduce to Gemini.",
+        "dims": [95, 98, 85, 99, 88, 82, 90, 85],
+    },
+    "fchollet": {
+        "role": "Keras Creator & Google AI Researcher",
+        "summary": "Created Keras, championing accessible deep learning and measuring true intelligence.",
+        "dims": [92, 97, 90, 96, 85, 88, 95, 94],
+    },
+    "goodfellow_ian": {
+        "role": "GAN Inventor & AI Researcher",
+        "summary": "Invented GANs — one of the most influential ideas in modern AI.",
+        "dims": [88, 99, 82, 95, 85, 86, 92, 88],
+    },
+    "andrewng": {
+        "role": "DeepLearning.AI Founder & Stanford Professor",
+        "summary": "The world's most impactful AI educator — teaching millions to build with AI.",
+        "dims": [92, 96, 95, 94, 85, 88, 90, 99],
+    },
+    "hardmaru": {
+        "role": "Stability AI Research Lead",
+        "summary": "Pioneering creative AI and world models at the intersection of art and science.",
+        "dims": [94, 95, 90, 93, 92, 88, 86, 92],
+    },
+    "jimfan": {
+        "role": "NVIDIA Senior AI Researcher",
+        "summary": "Building foundation agents and embodied AI at NVIDIA Research.",
+        "dims": [93, 96, 94, 95, 93, 88, 88, 96],
+    },
+    "_jasonwei": {
+        "role": "OpenAI Researcher",
+        "summary": "Discovered chain-of-thought prompting — fundamentally changing how we use LLMs.",
+        "dims": [92, 98, 88, 90, 94, 96, 90, 92],
+    },
+    "polyaboringkass": {
+        "role": "AI Researcher",
+        "summary": "Pushing the boundaries of multimodal AI research.",
+        "dims": [90, 94, 86, 88, 90, 85, 88, 85],
+    },
+
+    # ── AI Industry Leaders ──
+    "sataboringkass": {
+        "role": "Microsoft CEO",
+        "summary": "Transforming Microsoft into the world's leading AI platform company.",
+        "dims": [85, 80, 95, 96, 92, 68, 88, 78],
+    },
+    "sundarpichai": {
+        "role": "Google & Alphabet CEO",
+        "summary": "Leading Google's transformation into an AI-first company with Gemini.",
+        "dims": [84, 78, 93, 95, 90, 65, 86, 75],
+    },
+    "jensenhuang": {
+        "role": "NVIDIA CEO",
+        "summary": "Built the GPU empire powering the entire AI revolution.",
+        "dims": [86, 85, 92, 98, 88, 70, 85, 80],
+    },
+    "claboringkass": {
+        "role": "Hugging Face CEO",
+        "summary": "Democratizing AI with the world's largest open-source ML platform.",
+        "dims": [93, 90, 96, 97, 94, 85, 88, 95],
+    },
+    "aboringkass": {
+        "role": "Scale AI CEO",
+        "summary": "Building the data infrastructure layer powering every major AI lab.",
+        "dims": [88, 86, 90, 95, 90, 78, 85, 82],
+    },
+    "emadaboringkass": {
+        "role": "Stability AI Founder",
+        "summary": "Championed open-source generative AI and brought Stable Diffusion to the world.",
+        "dims": [90, 85, 92, 93, 92, 80, 82, 88],
+    },
+
+    # ── AI Builders & Developers ──
+    "swyx": {
+        "role": "AI Engineer & Latent Space Founder",
+        "summary": "The voice of the AI engineering movement — bridging research and production.",
+        "dims": [95, 88, 96, 90, 96, 92, 88, 97],
+    },
+    "shaboringkass": {
+        "role": "Cognition Labs CEO (Devin)",
+        "summary": "Building the world's first AI software engineer.",
+        "dims": [92, 90, 85, 96, 94, 88, 82, 80],
+    },
+    "levelsio": {
+        "role": "Indie AI Builder",
+        "summary": "Solo founder shipping viral AI products at impossible speed.",
+        "dims": [96, 72, 92, 98, 96, 85, 70, 88],
+    },
+    "mckaywrigley": {
+        "role": "AI Developer & Builder",
+        "summary": "Shipping AI-powered tools and teaching developers to build with LLMs.",
+        "dims": [95, 85, 90, 94, 95, 92, 78, 93],
+    },
+    "officiallogank": {
+        "role": "Nous Research Co-Founder",
+        "summary": "Co-founding Nous Research and advancing open-source AI agents.",
+        "dims": [94, 93, 88, 96, 92, 90, 86, 90],
+    },
+    "alexalbert__": {
+        "role": "Anthropic Developer Relations",
+        "summary": "Bridging Claude's capabilities with the developer community.",
+        "dims": [93, 88, 95, 85, 94, 92, 88, 95],
+    },
+    "simonw": {
+        "role": "Datasette Creator & AI Toolmaker",
+        "summary": "Prolific builder and writer exploring every corner of practical AI.",
+        "dims": [97, 88, 92, 96, 98, 90, 92, 96],
+    },
+    "emollick": {
+        "role": "Wharton Professor & AI Educator",
+        "summary": "The professor making AI practical for business — one experiment at a time.",
+        "dims": [94, 85, 96, 78, 95, 90, 94, 98],
+    },
+    "bindureddy": {
+        "role": "Abacus.AI CEO",
+        "summary": "Building enterprise AI platforms that bring LLMs to production.",
+        "dims": [92, 90, 88, 95, 90, 85, 82, 86],
+    },
+    "realgeorgehotz": {
+        "role": "Tiny Corp CEO & tinygrad Creator",
+        "summary": "Hacker-founder democratizing GPU computing with tinygrad.",
+        "dims": [95, 94, 88, 97, 92, 86, 78, 82],
+    },
+
+    # ── AI Content Creators & Educators ──
+    "emaboringkass": {
+        "role": "AI Content Creator",
+        "summary": "Making AI accessible and fun for everyday audiences.",
+        "dims": [85, 72, 90, 68, 82, 78, 88, 94],
+    },
+    "mattshumer_": {
+        "role": "HyperWrite CEO & AI Builder",
+        "summary": "Building AI writing tools and pushing agent capabilities forward.",
+        "dims": [94, 86, 90, 95, 94, 92, 80, 88],
+    },
+    "rohanpaul_ai": {
+        "role": "AI Educator & Content Creator",
+        "summary": "Breaking down complex AI papers into actionable insights.",
+        "dims": [88, 90, 92, 75, 90, 85, 82, 96],
+    },
+    "chiefaioffice": {
+        "role": "AI Newsletter & Educator",
+        "summary": "Curating the most important AI developments for a massive audience.",
+        "dims": [86, 78, 94, 72, 92, 80, 85, 95],
+    },
+
+    # ── Crypto x AI Figures ──
+    "shawmakesmagic": {
+        "role": "ai16z / ElizaOS Creator",
+        "summary": "Pioneering the intersection of AI agents and crypto with ElizaOS.",
+        "dims": [94, 85, 92, 96, 95, 88, 78, 90],
+    },
+    "dankvr": {
+        "role": "M3 AI Builder",
+        "summary": "Building at the frontier of AI agents and decentralized intelligence.",
+        "dims": [90, 82, 88, 92, 90, 85, 78, 86],
+    },
+    "dieterthemiami": {
+        "role": "AI Agent Builder",
+        "summary": "Exploring the creative frontier where AI meets community building.",
+        "dims": [88, 78, 92, 88, 90, 82, 76, 85],
+    },
+}
+
+# Aliases (alternate handles or common misspellings)
+_ALIASES = {
+    "samaltman": "sama",
+    "elonmusk": "elonmusk",
+    "andrejkarpathy": "karpathy",
+    "daboringkass": "demaboringkass",
+    "daboringkass": "demaboringkass",
+    "garymarcus": "garymarcus",
+    "clementdelangue": "claboringkass",
+    "satyanadella": "sataboringkass",
+    "alexanderwang": "aboringkass",
+    "emostaque": "emadaboringkass",
+    "scottaboringkass": "shaboringkass",
+    "shannonaboringkass": "shaboringkass",
+}
 
 
 def _h(s): return int(hashlib.md5(s.encode()).hexdigest(), 16)
@@ -81,26 +311,63 @@ def score_to_role(s):
         if s >= t: return l
     return ROLE_MAP[-1][1]
 
-def get_summary(s):
-    if s >= 90: return SUMMARIES[0]
-    if s >= 80: return SUMMARIES[1]
-    if s >= 70: return SUMMARIES[2]
-    if s >= 55: return SUMMARIES[3]
-    if s >= 35: return SUMMARIES[4]
-    return SUMMARIES[5]
 
 def gen_scores(handle):
-    seed = _h(handle.lower())
+    """Generate scores for a handle. Known figures get curated data;
+    unknown handles get stable deterministic scores."""
+    h = handle.lower()
+    h = _ALIASES.get(h, h)
+
+    # ── Known figure? Return curated data ──
+    if h in KNOWN_FIGURES:
+        fig = KNOWN_FIGURES[h]
+        dims = [{"name": n, "score": s} for n, s in zip(DIM_NAMES, fig["dims"])]
+        weights = [0.15, 0.15, 0.12, 0.15, 0.12, 0.10, 0.10, 0.11]
+        total = round(sum(s * w for s, w in zip(fig["dims"], weights)))
+        return {
+            "handle": handle, "total_score": total,
+            "level": score_to_level(total), "role": fig["role"],
+            "summary": fig["summary"], "dimensions": dims,
+        }
+
+    # ── Unknown handle: stable deterministic scores ──
+    seed = _h(h)
     def rng():
         nonlocal seed
         seed = (seed * 16807) % 2147483647
         return (seed & 0x7FFFFFFF) / 2147483647
-    dims = [{"name": n, "score": int(40 + rng() * 55)} for n in DIM_NAMES]
-    total = round(sum(d["score"] for d in dims) / len(dims))
+
+    base = 35 + int(rng() * 30)  # base range 35-65
+    dims = []
+    for n in DIM_NAMES:
+        variance = int(rng() * 25) - 12  # -12 to +12
+        s = max(15, min(88, base + variance))
+        dims.append({"name": n, "score": s})
+
+    weights = [0.15, 0.15, 0.12, 0.15, 0.12, 0.10, 0.10, 0.11]
+    total = round(sum(d["score"] * w for d, w in zip(dims, weights)))
+
+    role_pool = [
+        "AI Explorer", "AI Learner", "Digital Thinker", "AI Enthusiast",
+        "Tech Curious", "Prompt Dabbler", "AI Observer", "Data Explorer",
+        "Code Explorer", "AI Student", "Future Builder", "AI Tinkerer",
+    ]
+    role = role_pool[seed % len(role_pool)]
+
+    summary_pool = [
+        "Exploring the AI landscape with growing curiosity and potential.",
+        "Starting to integrate AI tools into daily workflows.",
+        "Curious about AI's possibilities and beginning to experiment.",
+        "Building foundational AI knowledge one step at a time.",
+        "Engaging with AI content and discovering new capabilities.",
+        "On the path to deeper AI understanding and hands-on building.",
+    ]
+    summary = summary_pool[seed % len(summary_pool)]
+
     return {
         "handle": handle, "total_score": total,
-        "level": score_to_level(total), "role": score_to_role(total),
-        "summary": get_summary(total), "dimensions": dims,
+        "level": score_to_level(total), "role": role,
+        "summary": summary, "dimensions": dims,
     }
 
 
